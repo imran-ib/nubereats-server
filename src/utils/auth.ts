@@ -1,6 +1,7 @@
+import * as jwt from 'jsonwebtoken';
+
 import bcrypt from 'bcrypt';
 import path from 'path';
-import {verify} from 'jsonwebtoken';
 
 const SALT_ROUND = 10;
 
@@ -40,7 +41,7 @@ export function getUserId(authorization: string): string | null {
   }
 
   const token = authorization.replace('Bearer ', '');
-  const verifiedToken = verify(token, APP_SECRET) as Token;
+  const verifiedToken = jwt.verify(token, APP_SECRET) as Token;
 
   return verifiedToken && verifiedToken.userId;
 }
@@ -54,7 +55,7 @@ export const getToken = (req: Request & any): string | undefined => {
   }
 
   const token = authHeader.replace('Bearer ', '');
-  const verifiedToken = verify(token, APP_SECRET) as Token;
+  const verifiedToken = jwt.verify(token, APP_SECRET) as Token;
 
   return verifiedToken && verifiedToken.userId;
 };
@@ -84,3 +85,27 @@ export const validateCredential = async (
       resolve(res);
     });
   });
+
+// Validate Email
+export function validateEmail(email: string): boolean {
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+  return re.test(String(email).toLowerCase());
+}
+
+// Jsonwebtoken
+export const GenerateToken = (userId: number): string => {
+  return jwt.sign({userId: userId}, process.env.JWT_SECRET as string, {
+    algorithm: 'HS256',
+    // The audience of a token is the intended recipient of the token
+    audience: 'https://loacalhost:3000',
+    expiresIn: '30d',
+    header: {
+      alg: 'HS256',
+      typ: 'User_Auth_Token',
+    },
+    issuer: 'https://loacalhost:4000/graphql',
+    mutatePayload: false,
+  });
+};

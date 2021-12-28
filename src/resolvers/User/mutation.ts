@@ -1,36 +1,10 @@
 import {USER_SIGNED_IN, USER_UPDATED} from './subscription';
 import {compare, hash} from 'bcryptjs';
-import {inputObjectType, mutationField, nonNull, stringArg} from 'nexus';
+import {mutationField, nonNull, stringArg} from 'nexus';
 
 import {APP_SECRET} from '../../utils/auth';
 import {assert} from '../../utils/assert';
 import {sign} from 'jsonwebtoken';
-
-export const UserInputType = inputObjectType({
-  name: 'UserCreateInput',
-  definition(t) {
-    t.nonNull.string('email');
-    t.nonNull.string('password');
-    t.string('name');
-    t.string('nickname');
-    t.date('birthday');
-    t.gender('gender');
-    t.string('phone');
-    t.string('statusMessage');
-  },
-});
-
-export const UserUpdateInputType = inputObjectType({
-  name: 'UserUpdateInput',
-  definition(t) {
-    t.string('name');
-    t.string('nickname');
-    t.date('birthday');
-    t.string('phone');
-    t.string('statusMessage');
-    t.gender('gender');
-  },
-});
 
 export const signUp = mutationField('signUp', {
   type: 'AuthPayload',

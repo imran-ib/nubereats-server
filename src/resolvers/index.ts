@@ -1,2 +1,4 @@
 export * from './User';
-export * from './Post';
+export * from './Restaurants';
+export * from './Dish';
+export * from './Orders';

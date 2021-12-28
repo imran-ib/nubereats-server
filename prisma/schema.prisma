@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["filterJson"]
 }
 
 datasource db {
@@ -7,54 +8,112 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Gender {
-  male
-  female
+enum ROLE {
+  CLIENT
+  OWNER
+  DELIVERY_PERSON
 }
 
-enum AuthType {
-  email
-  facebook
-  google
-  apple
+enum ORDER_STATUS {
+  PENDING
+  COOKING
+  PICKED_UP
+  DELIVERED
 }
 
 model User {
-  id        String    @id @default(cuid()) @db.VarChar(255)
-  email     String    @unique @db.VarChar(255)
-  password  String?   @db.VarChar(255)
-  name      String?   @db.VarChar(255)
-  nickname  String?   @db.VarChar(255)
-  thumbURL  String?   @db.VarChar(255)
-  photoURL  String?   @db.VarChar(255)
-  birthDay  DateTime?
-  gender    Gender?
-  phone     String?   @db.VarChar(255)
-  verified  Boolean?
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now())
-  deletedAt DateTime?
-  posts     Post[]
-  profile   Profile?
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  password   String
+  name       String
+  role       ROLE         @default(CLIENT)
+  code       VerifyEmail?
+  isVerified Boolean      @default(false) @map("isVerified")
+  Restaurant Restaurant[]
+  orders     Order[]      @relation("customer")
+  rides      Order[]      @relation("Driver")
+  updatedAt  DateTime     @updatedAt
+  createdAt  DateTime     @default(now())
 }
 
-model Profile {
-  id       String    @id @default(cuid()) @db.VarChar(255)
-  socialId String?
-  authType AuthType?
-  userId   String    @unique @db.VarChar(255)
-  User     User      @relation(fields: [userId], references: [id])
+model VerifyEmail {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique // relation scalar field (used in the `@relation` attribute above)
+  code      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-model Post {
-  id        Int       @id @default(autoincrement())
-  title     String    @db.VarChar(255)
-  content   String?
-  published Boolean   @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  deletedAt DateTime?
+model Restaurant {
+  id         Int      @id @default(autoincrement())
+  name       String
+  coverImage String
+  address    String
+  owner      User     @relation(fields: [userId], references: [id])
+  userId     Int
+  categories Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  menu       Dish[]
+  Order      Order[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  userId String @db.VarChar(255)
-  user   User   @relation(fields: [userId], references: [id])
+  @@unique([name, userId])
+  @@index([name])
+}
+
+model Category {
+  id         Int          @id @default(autoincrement())
+  name       String       @unique
+  slug       String       @unique
+  coverImage String
+  Restaurant Restaurant[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@index([name])
+}
+
+model Dish {
+  id           Int        @id @default(autoincrement())
+  name         String     @unique
+  price        Int
+  image        String
+  description  String
+  options      Json[]
+  Restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  Order     Order?      @relation(fields: [orderId], references: [id])
+  orderId   Int?
+  OrderItem OrderItem[]
+  @@index([name])
+}
+
+model Order {
+  id           Int          @id @default(autoincrement())
+  total        Int
+  status       ORDER_STATUS @default(PENDING)
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  customer     User         @relation(fields: [customerId], references: [id], name: "customer")
+  customerId   Int
+  driver       User         @relation(fields: [driverId], references: [id], name: "Driver")
+  driverId     Int
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  dishes Dish[]
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  dish      Dish     @relation(fields: [dishId], references: [id])
+  dishId    Int
+  options   Json[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

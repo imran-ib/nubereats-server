@@ -1,4 +1,4 @@
-import {nonNull, stringArg, subscriptionField} from 'nexus';
+import {intArg, nonNull, subscriptionField} from 'nexus';
 
 import {assert} from '../../utils/assert';
 import {withFilter} from 'graphql-subscriptions';
@@ -9,7 +9,7 @@ export const USER_UPDATED = 'USER_UPDATED';
 export const userSignedIn = subscriptionField('userSignedIn', {
   type: 'User',
   args: {
-    userId: nonNull(stringArg()),
+    userId: nonNull(intArg()),
   },
   subscribe: withFilter(
     (_, args, ctx) => {
@@ -29,7 +29,7 @@ export const userSignedIn = subscriptionField('userSignedIn', {
 export const userUpdated = subscriptionField('userUpdated', {
   type: 'User',
   args: {
-    userId: nonNull(stringArg()),
+    userId: nonNull(intArg()),
   },
   subscribe: withFilter(
     (_, __, {pubsub}) => pubsub.asyncIterator([USER_UPDATED]),

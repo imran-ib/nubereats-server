@@ -1,8 +1,5 @@
 {
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-  ],
+  "eslint.validate": ["javascript", "typescript"],
   "editor.codeActionsOnSave": {
     "source.fixAll": true
   },
@@ -18,6 +15,10 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+
   "javascript.preferences.importModuleSpecifier": "relative",
   "typescript.preferences.importModuleSpecifier": "relative",
   "prettier.configPath": ".prettierrc.js",
