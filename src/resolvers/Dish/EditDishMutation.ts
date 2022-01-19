@@ -15,6 +15,7 @@ export const EditDishMutation = extendType({
           }),
         ),
       },
+      //@ts-ignore
       resolve: async (_, args, ctx: Context) => {
         try {
           const {dishId, name, price, description, options} = args.data;
@@ -41,10 +42,10 @@ export const EditDishMutation = extendType({
           return ctx.prisma.dish.update({
             where: {id: dishId},
             data: {
-              name,
-              price,
-              description,
-              options,
+              name: name || undefined,
+              price: price || undefined,
+              description: description || undefined,
+              dishOptions: options || undefined,
             },
           });
         } catch (error) {

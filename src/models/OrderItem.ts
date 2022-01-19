@@ -19,7 +19,6 @@ export const OrderItem = objectType({
     t.field('options', {
       type: 'JSONObject',
       resolve(parent, _args, _ctx) {
-        console.log('🚀 ~ file: Dish.ts ~ line 18 ~ resolve ~ parent', parent);
         if (parent && typeof parent === 'object' && Array.isArray(parent)) {
           const Obj = parent as Prisma.JsonArray;
 

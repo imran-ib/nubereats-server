@@ -79,8 +79,17 @@ export const CreateDishInput = inputObjectType({
     t.nonNull.string('name');
     t.nonNull.int('price');
     t.nonNull.string('description');
-    // t.nonNull.json('options');
-    t.list.field('options', {type: 'JSONObject'});
+    t.list.field('dishOptions', {type: 'JSONObject'});
+    //   "dishOptions" : {
+    //     "options": {
+    //        "name": ["ChowMie New"],
+    //        "SpiceLevel": ["Normal", "Hot" , "Kill me"],
+    //         "choice":    ["Low" ,"Med" ,"Kill Me"],
+    //         "size":      ["X" ,"M" ,"L","XL"],
+    //         "extra":     [5 , 10 , 15 , 20],
+    //         "remarks" :  ["Pleas Add extra Salt"]
+    //         }}
+    // },
   },
 });
 export const EditDishInput = inputObjectType({
@@ -90,7 +99,7 @@ export const EditDishInput = inputObjectType({
     t.nullable.string('name');
     t.nullable.int('price');
     t.nullable.string('description');
-    t.nullable.field('options', {type: 'JSONObject'});
+    t.list.nullable.field('options', {type: 'JSONObject'});
   },
 });
 

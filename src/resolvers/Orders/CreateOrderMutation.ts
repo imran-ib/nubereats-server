@@ -37,10 +37,58 @@ export const CreateOrderMutation = extendType({
             if (!dish) {
               return new Error(`dish not found`);
             }
+            let options;
+            let dishPrice = dish.price;
+            //@ts-ignore
+            let OrderOptions: [{}] = [];
 
             for (const itemOptions of item?.options!) {
-              const dishOptios = await ctx.prisma.dish.findMany({});
+              OrderOptions.push(itemOptions);
+
+              options = await ctx.prisma.dish.findMany({
+                select: {dishOptions: true},
+                where: {
+                  dishOptions: {
+                    hasSome: itemOptions,
+                  },
+                },
+              });
             }
+
+            if (options.length) {
+              const optionsArr: any[] = options.map((o) => o.dishOptions);
+              const merged = [].concat.apply([], optionsArr);
+
+              let UserOrderOptions = merged.map(
+                //@ts-ignore
+                (element, i) => (element = OrderOptions[i]),
+              );
+
+              UserOrderOptions = UserOrderOptions.filter(
+                (e) => e !== undefined,
+              );
+
+              for (const iterator of UserOrderOptions) {
+                //@ts-ignore
+                dishPrice = dishPrice + iterator.extra;
+              }
+            }
+            console.log(dishPrice);
+
+            // const DishOptions = options.map(
+            //   (o) => o?.dishOptions?.options?.option,
+            // );
+
+            // const merged = [].concat.apply([], DishOptions);
+
+            // const UserItem = merged.filter(
+            //   (i) => i.name === item?.options.option.name,
+            // );
+
+            // console.log(
+            //   '🚀 ~ file: CreateOrderMutation.ts ~ line 61 ~ resolve: ~ UserItem',
+            //   UserItem,
+            // );
 
             // await ctx.prisma.orderItem.create({
             //   data: {

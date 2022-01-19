@@ -12,14 +12,17 @@ export const Dish = objectType({
     t.string('description');
     t.field('Restaurant', {type: 'Restaurant'});
 
-    t.field('options', {
+    t.list.field('dishOptions', {
       type: 'JSONObject',
       resolve(parent, _args, _ctx) {
-        console.log('🚀 ~ file: Dish.ts ~ line 18 ~ resolve ~ parent', parent);
-        if (parent && typeof parent === 'object' && Array.isArray(parent)) {
-          const Obj = parent as Prisma.JsonArray;
+        if (
+          parent?.dishOptions &&
+          typeof parent?.dishOptions === 'object' &&
+          Array.isArray(parent?.dishOptions)
+        ) {
+          const Obj = parent?.dishOptions as Prisma.JsonArray;
 
-          return Obj[0];
+          return Obj;
         }
 
         return;

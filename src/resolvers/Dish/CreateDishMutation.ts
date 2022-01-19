@@ -18,7 +18,7 @@ export const CreateDish = extendType({
       //@ts-ignore
       resolve: async (
         _,
-        {data: {RestaurantId, name, price, description, options}},
+        {data: {RestaurantId, name, price, description, dishOptions}},
         ctx: Context,
       ) => {
         try {
@@ -44,7 +44,7 @@ export const CreateDish = extendType({
               description,
               name,
               price,
-              options: options || [],
+              dishOptions: dishOptions || undefined,
               image: 'www.someUrl.com',
               Restaurant: {
                 connect: {

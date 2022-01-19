@@ -10,6 +10,7 @@ export const DeleteDishMutation = extendType({
       args: {
         dishId: nonNull(intArg()),
       },
+      //@ts-ignore
       resolve: async (_, args, ctx: Context) => {
         try {
           if (!ctx.userId) {
